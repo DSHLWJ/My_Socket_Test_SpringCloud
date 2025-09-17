@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.mybokesys.mapper.AritcleTableMapper">
+    
+    <resultMap type="org.example.mybokesys.domain.AritcleTable" id="AritcleTableResult">
+        <result property="articleId"    column="ARTICLE_ID"    />
+        <result property="userArticleTitile"    column="USER_ARTICLE_TITILE"    />
+        <result property="userArticleDesc"    column="USER_ARTICLE_DESC"    />
+        <result property="userArticleCover"    column="USER_ARTICLE_COVER"    />
+        <result property="userArticleStatus"    column="USER_ARTICLE_STATUS"    />
+        <result property="REVISION"    column="REVISION"    />
+        <result property="createdBy"    column="CREATED_BY"    />
+        <result property="createdTime"    column="CREATED_TIME"    />
+        <result property="updatedBy"    column="UPDATED_BY"    />
+        <result property="updatedTime"    column="UPDATED_TIME"    />
+    </resultMap>
+
+    <resultMap id="AritcleTableAritcleContentTableResult" type="org.example.mybokesys.domain.AritcleTable" extends="AritcleTableResult">
+        <collection property="aritcleContentTableList" ofType="org.example.mybokesys.domain.AritcleContentTable" column="ARTICLE_ID" select="selectAritcleContentTableList" />
+    </resultMap>
+
+    <resultMap type="org.example.mybokesys.domain.AritcleContentTable" id="AritcleContentTableResult">
+        <result property="articleId"    column="ARTICLE_ID"    />
+        <result property="partIndex"    column="PART_INDEX"    />
+        <result property="partContent"    column="PART_CONTENT"    />
+    </resultMap>
+
+    <sql id="selectAritcleTableVo">
+        select ARTICLE_ID, USER_ARTICLE_TITILE, USER_ARTICLE_DESC, USER_ARTICLE_COVER, USER_ARTICLE_STATUS, REVISION, CREATED_BY, CREATED_TIME, UPDATED_BY, UPDATED_TIME from aritcle_table
+    </sql>
+
+    <select id="selectAritcleTableList" parameterType="org.example.mybokesys.domain.AritcleTable" resultMap="AritcleTableResult">
+        <include refid="selectAritcleTableVo"/>
+        <where>
+            <if test="userArticleTitile != null and userArticleTitile != ''">
+                and USER_ARTICLE_TITILE LIKE CONCAT('%', #{userArticleTitile}, '%')
+            </if>
+            <if test="userArticleDesc != null and userArticleDesc != ''">
+                and USER_ARTICLE_DESC LIKE CONCAT('%', #{userArticleDesc}, '%')
+            </if>
+            <if test="userArticleStatus != null  and userArticleStatus != ''"> and USER_ARTICLE_STATUS = #{userArticleStatus}</if>
+            <if test="createdBy != null  and createdBy != ''"> and CREATED_BY = #{createdBy}</if>
+            <if test="createdTime != null "> and CREATED_TIME = #{createdTime}</if>
+            <if test="updatedBy != null  and updatedBy != ''"> and UPDATED_BY = #{updatedBy}</if>
+            <if test="updatedTime != null "> and UPDATED_TIME = #{updatedTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectAritcleTableByArticleId" parameterType="String" resultMap="AritcleTableAritcleContentTableResult">
+        select ARTICLE_ID, USER_ARTICLE_TITILE, USER_ARTICLE_DESC, USER_ARTICLE_COVER, USER_ARTICLE_STATUS, REVISION, CREATED_BY, CREATED_TIME, UPDATED_BY, UPDATED_TIME
+        from aritcle_table
+        where ARTICLE_ID = #{articleId}
+    </select>
+
+    <select id="selectAritcleContentTableList" resultMap="AritcleContentTableResult">
+        select ARTICLE_ID, PART_INDEX, PART_CONTENT
+        from aritcle_content_table
+        where ARTICLE_ID = #{ARTICLE_ID}
+    </select>
+
+    <insert id="insertAritcleTable" parameterType="org.example.mybokesys.domain.AritcleTable">
+        insert into aritcle_table
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="articleId != null">ARTICLE_ID,</if>
+            <if test="userArticleTitile != null and userArticleTitile != ''">USER_ARTICLE_TITILE,</if>
+            <if test="userArticleDesc != null and userArticleDesc != ''">USER_ARTICLE_DESC,</if>
+            <if test="userArticleCover != null and userArticleCover != ''">USER_ARTICLE_COVER,</if>
+            <if test="userArticleStatus != null and userArticleStatus != ''">USER_ARTICLE_STATUS,</if>
+            <if test="REVISION != null">REVISION,</if>
+            <if test="createdBy != null and createdBy != ''">CREATED_BY,</if>
+            <if test="createdTime != null">CREATED_TIME,</if>
+            <if test="updatedBy != null and updatedBy != ''">UPDATED_BY,</if>
+            <if test="updatedTime != null">UPDATED_TIME,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="articleId != null">#{articleId},</if>
+            <if test="userArticleTitile != null and userArticleTitile != ''">#{userArticleTitile},</if>
+            <if test="userArticleDesc != null and userArticleDesc != ''">#{userArticleDesc},</if>
+            <if test="userArticleCover != null and userArticleCover != ''">#{userArticleCover},</if>
+            <if test="userArticleStatus != null and userArticleStatus != ''">#{userArticleStatus},</if>
+            <if test="REVISION != null">#{REVISION},</if>
+            <if test="createdBy != null and createdBy != ''">#{createdBy},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="updatedBy != null and updatedBy != ''">#{updatedBy},</if>
+            <if test="updatedTime != null">#{updatedTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAritcleTable" parameterType="org.example.mybokesys.domain.AritcleTable">
+        update aritcle_table
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userArticleTitile != null and userArticleTitile != ''">USER_ARTICLE_TITILE = #{userArticleTitile},</if>
+            <if test="userArticleDesc != null and userArticleDesc != ''">USER_ARTICLE_DESC = #{userArticleDesc},</if>
+            <if test="userArticleCover != null and userArticleCover != ''">USER_ARTICLE_COVER = #{userArticleCover},</if>
+            <if test="userArticleStatus != null and userArticleStatus != ''">USER_ARTICLE_STATUS = #{userArticleStatus},</if>
+            <if test="REVISION != null">REVISION = #{REVISION},</if>
+            <if test="createdBy != null and createdBy != ''">CREATED_BY = #{createdBy},</if>
+            <if test="createdTime != null">CREATED_TIME = #{createdTime},</if>
+            <if test="updatedBy != null and updatedBy != ''">UPDATED_BY = #{updatedBy},</if>
+            <if test="updatedTime != null">UPDATED_TIME = #{updatedTime},</if>
+        </trim>
+        where ARTICLE_ID = #{articleId}
+    </update>
+
+    <delete id="deleteAritcleTableByArticleId" parameterType="String">
+        delete from aritcle_table where ARTICLE_ID = #{articleId}
+    </delete>
+
+    <delete id="deleteAritcleTableByArticleIds" parameterType="String">
+        delete from aritcle_table where ARTICLE_ID in 
+        <foreach item="articleId" collection="array" open="(" separator="," close=")">
+            #{articleId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteAritcleContentTableByArticleIds" parameterType="String">
+        delete from aritcle_content_table where ARTICLE_ID in 
+        <foreach item="articleId" collection="array" open="(" separator="," close=")">
+            #{articleId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteAritcleContentTableByArticleId" parameterType="String">
+        delete from aritcle_content_table where ARTICLE_ID = #{articleId}
+    </delete>
+
+    <insert id="batchAritcleContentTable">
+        insert into aritcle_content_table( ARTICLE_ID, PART_INDEX, PART_CONTENT) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.articleId}, #{item.partIndex}, #{item.partContent})
+        </foreach>
+    </insert>
+</mapper>
